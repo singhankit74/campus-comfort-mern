@@ -1,6 +1,7 @@
 # Dependencies
-/node_modules
-/client/node_modules
+node_modules/
+client/node_modules/
+server/node_modules/
 /.pnp
 .pnp.js
 
@@ -25,10 +26,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # IDE
-.idea/
-.vscode/
-*.sublime-project
-*.sublime-workspace
+.idea
+.vscode
+*.swp
+*.swo
 
 # Optional npm cache directory
 .npm

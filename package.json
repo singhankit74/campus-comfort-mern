@@ -1,0 +1,28 @@
+{
+  "name": "campus-comfort-mern",
+  "version": "1.0.0",
+  "description": "Campus Comfort Hub - A MERN application for managing campus issues and feedback",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "cd server && npm start",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": [
+    "mern",
+    "react",
+    "node",
+    "express",
+    "mongodb",
+    "campus",
+    "issues",
+    "feedback"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
