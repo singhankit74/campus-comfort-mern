@@ -192,7 +192,7 @@ campus-comfort-mern/
 
 ## 👥 Contributors
 
-- Your Name - Lead Developer
+- Ankit Kumar Singh - Lead Developer
 
 ## 📄 License
 
