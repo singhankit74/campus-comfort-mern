@@ -6,6 +6,8 @@ exports.protect = async (req, res, next) => {
   let token;
 
   try {
+    console.log('Auth request headers:', JSON.stringify(req.headers));
+    
     // Check for token in headers
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
@@ -38,7 +40,7 @@ exports.protect = async (req, res, next) => {
         });
       }
       
-      console.log('User authenticated:', { id: user._id, role: user.role });
+      console.log('User authenticated:', { id: user._id, role: user.role, route: req.originalUrl });
       req.user = user;
       next();
     } catch (err) {

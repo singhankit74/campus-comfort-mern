@@ -1,38 +1,163 @@
-.App {
-  text-align: center;
+/* Overall app styling */
+:root {
+  --primary-color: #1890ff;
+  --secondary-color: #52c41a;
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --error-color: #f5222d;
+  --info-color: #1890ff;
+  --dark-color: #001529;
+  --light-color: #f0f2f5;
+  --gray-color: #d9d9d9;
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --text-light: #999999;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Base styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+  background-color: #f5f7fa;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* Typography improvements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: #182b4d;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h2 {
+  margin-bottom: 0.25rem;
+}
+
+/* Card enhancements */
+.card {
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: none;
+  transition: var(--transition);
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background-color: white;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 1rem 1.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Button improvements */
+.btn {
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: #096dd9;
+  border-color: #096dd9;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+}
+
+.border-left-primary {
+  border-left: 4px solid var(--primary-color);
+}
+
+.border-left-success {
+  border-left: 4px solid var(--success-color);
+}
+
+.border-left-warning {
+  border-left: 4px solid var(--warning-color);
+}
+
+.border-left-info {
+  border-left: 4px solid var(--info-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .card-body {
+    padding: 1rem;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
   }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Dark theme support (for future use) */
+.dark-theme {
+  --text-color: #e8e8e8;
+  --text-secondary: #b0b0b0;
+  --text-light: #888888;
+  --light-color: #232323;
+  background-color: #18191a;
+}
+
+.dark-theme .card {
+  background-color: #242526;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.dark-theme .card-header {
+  background-color: #2d2d2d;
+  border-bottom: 1px solid #373737;
 }

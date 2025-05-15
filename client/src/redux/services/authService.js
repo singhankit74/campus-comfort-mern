@@ -46,6 +46,8 @@ const login = async (userData) => {
       // Save user to localStorage
       const userData = response.data.user;
       console.log('AuthService: saving user to localStorage:', userData);
+      // Log token specifically
+      console.log('AuthService: user token:', userData.token ? `${userData.token.substring(0, 15)}...` : 'no token');
       localStorage.setItem('user', JSON.stringify(userData));
     } else {
       console.error('AuthService: login failed:', response.data.message);

@@ -1,19 +1,25 @@
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/slices/authSlice';
+import { resetChatState } from '../redux/slices/chatSlice';
 import { useTheme } from '../context/ThemeContext';
+import { Badge } from 'antd';
 
 const Navbar = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector(state => state.auth);
+  const { unreadCounts } = useSelector(state => state.chat);
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
+  
+  // Calculate total unread messages
+  const totalUnreadCount = Object.values(unreadCounts || {}).reduce((total, count) => total + count, 0);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
+      if (window.scrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -24,178 +30,150 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const onLogout = () => {
+  const handleLogout = () => {
+    // Reset chat state before logout
+    dispatch(resetChatState());
+    // Logout the user
     dispatch(logout());
-    navigate('/');
+    // Navigate to login page
+    navigate('/login');
   };
 
   return (
-    <nav className={`navbar navbar-expand-lg navbar-custom ${scrolled ? 'shadow-sm' : ''}`}>
+    <nav className={`navbar navbar-expand-lg ${scrolled ? 'navbar-scrolled shadow-sm' : ''} ${theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-white'}`}>
       <div className="container">
-        <Link className="navbar-brand d-flex align-items-center" to="/">
-          <i className="bi bi-building me-2 fs-4"></i>
-          <span className="fw-bold">Campus Comfort</span>
+        <Link className="navbar-brand" to="/">
+          <i className="bi bi-buildings me-2"></i>
+          Campus Comfort
         </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
+        
+        <button 
+          className="navbar-toggler" 
+          type="button" 
+          data-bs-toggle="collapse" 
           data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
+          aria-controls="navbarNav" 
+          aria-expanded="false" 
           aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
+        
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
+          <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
-                <i className="bi bi-house-door me-1"></i> Home
-              </Link>
+              <Link className="nav-link" to="/">Home</Link>
             </li>
-            {user && (
+            
+            {user ? (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard">
-                    <i className="bi bi-speedometer2 me-1"></i> Dashboard
-                  </Link>
+                  <Link className="nav-link" to="/dashboard">Dashboard</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/issues">
-                    <i className="bi bi-exclamation-triangle me-1"></i> Issues
-                  </Link>
+                  <Link className="nav-link" to="/issues">Issues</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/feedback">
-                    <i className="bi bi-chat-square-text me-1"></i> Feedback
-                  </Link>
+                  <Link className="nav-link" to="/feedback">Feedback</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/notices">
-                    <i className="bi bi-megaphone me-1"></i> Notices
+                  <Link className="nav-link" to="/notices">Notices</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/chat">
+                    Chat
+                    {totalUnreadCount > 0 && (
+                      <Badge 
+                        count={totalUnreadCount} 
+                        size="small" 
+                        style={{ marginLeft: '5px', backgroundColor: '#f5222d' }} 
+                      />
+                    )}
                   </Link>
                 </li>
                 {user.role === 'admin' && (
                   <li className="nav-item dropdown">
-                    <a
-                      className="nav-link dropdown-toggle"
-                      href="#"
-                      id="adminDropdown"
-                      role="button"
-                      data-bs-toggle="dropdown"
+                    <a 
+                      className="nav-link dropdown-toggle" 
+                      href="#" 
+                      id="adminDropdown" 
+                      role="button" 
+                      data-bs-toggle="dropdown" 
                       aria-expanded="false"
                     >
-                      <i className="bi bi-shield-lock me-1"></i> Admin
+                      Admin
                     </a>
-                    <ul className="dropdown-menu" aria-labelledby="adminDropdown">
+                    <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
                       <li>
-                        <Link className="dropdown-item" to="/admin/dashboard">
-                          <i className="bi bi-grid-1x2 me-2"></i> Admin Dashboard
-                        </Link>
+                        <Link className="dropdown-item" to="/admin/rooms">Room Management</Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/admin/rooms">
-                          <i className="bi bi-grid-1x2 me-2"></i> Room Management
-                        </Link>
+                        <Link className="dropdown-item" to="/admin/room-allocation">Room Allocation</Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/admin/room-allocation">
-                          <i className="bi bi-grid-1x2 me-2"></i> Room Allocation
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/notices">
-                          <i className="bi bi-megaphone me-2"></i> Manage Notices
-                        </Link>
+                        <Link className="dropdown-item" to="/admin/notices">Manage Notices</Link>
                       </li>
                     </ul>
                   </li>
                 )}
+                <li className="nav-item dropdown">
+                  <a 
+                    className="nav-link dropdown-toggle" 
+                    href="#" 
+                    id="userDropdown" 
+                    role="button" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false"
+                  >
+                    <i className="bi bi-person-circle me-1"></i>
+                    {user.name}
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li>
+                      <Link className="dropdown-item" to="/profile">
+                        <i className="bi bi-person me-2"></i>
+                        Profile
+                      </Link>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <button 
+                        className="dropdown-item" 
+                        onClick={toggleTheme}
+                      >
+                        <i className={`bi ${theme === 'dark' ? 'bi-sun' : 'bi-moon'} me-2`}></i>
+                        {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                      </button>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <button 
+                        className="dropdown-item text-danger" 
+                        onClick={handleLogout}
+                      >
+                        <i className="bi bi-box-arrow-right me-2"></i>
+                        Logout
+                      </button>
+                    </li>
+                  </ul>
+                </li>
               </>
-            )}
-          </ul>
-          
-          <ul className="navbar-nav ms-auto">
-            {/* Theme Toggle Button */}
-            <li className="nav-item me-2">
-              <button 
-                className="btn theme-toggle" 
-                onClick={toggleTheme}
-                aria-label="Toggle theme"
-              >
-                {theme === 'dark' ? (
-                  <i className="bi bi-sun-fill text-warning fs-5"></i>
-                ) : (
-                  <i className="bi bi-moon-fill text-light fs-5"></i>
-                )}
-              </button>
-            </li>
-
-            {user ? (
-              <li className="nav-item dropdown">
-                <a
-                  className="nav-link dropdown-toggle d-flex align-items-center"
-                  href="#"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <div className="avatar-circle me-2 bg-white bg-opacity-25 text-white d-flex align-items-center justify-content-center">
-                    <i className="bi bi-person-fill"></i>
-                  </div>
-                  <span>{user.name.split(' ')[0]}</span>
-                </a>
-                <ul className="dropdown-menu dropdown-menu-end shadow-sm">
-                  {user.role === 'admin' && (
-                    <>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/dashboard">
-                          <i className="bi bi-grid-1x2 me-2"></i> Admin Dashboard
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item" to="/admin/notices">
-                          <i className="bi bi-megaphone me-2"></i> Manage Notices
-                        </Link>
-                      </li>
-                      <li><hr className="dropdown-divider" /></li>
-                    </>
-                  )}
-                  <li>
-                    <Link className="dropdown-item" to="/profile">
-                      <i className="bi bi-person-circle me-2"></i> Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/dashboard">
-                      <i className="bi bi-speedometer2 me-2"></i> Dashboard
-                    </Link>
-                  </li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li>
-                    <button className="dropdown-item" onClick={onLogout}>
-                      <i className="bi bi-box-arrow-right me-2"></i> Logout
-                    </button>
-                  </li>
-                </ul>
-              </li>
             ) : (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/login">
-                    <i className="bi bi-box-arrow-in-right me-1"></i> Login
-                  </Link>
+                  <Link className="nav-link" to="/login">Login</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="btn btn-light btn-sm rounded-pill px-3 ms-2" to="/register">
-                    <i className="bi bi-person-plus me-1"></i> Register
-                  </Link>
+                  <Link className="nav-link" to="/register">Register</Link>
                 </li>
-                <li className="nav-item ms-2">
-                  <Link className="btn btn-outline-light btn-sm rounded-pill px-3" to="/admin-register">
-                    <i className="bi bi-shield me-1"></i> Admin
-                  </Link>
+                <li className="nav-item">
+                  <button 
+                    className="nav-link" 
+                    onClick={toggleTheme}
+                    style={{ background: 'none', border: 'none' }}
+                  >
+                    <i className={`bi ${theme === 'dark' ? 'bi-sun' : 'bi-moon'}`}></i>
+                  </button>
                 </li>
               </>
             )}

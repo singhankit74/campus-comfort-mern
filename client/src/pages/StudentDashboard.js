@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getMyEnrollments } from '../redux/slices/enrollmentSlice';
+import { logout } from '../redux/slices/authSlice';
+import { resetChatState } from '../redux/slices/chatSlice';
 import Spinner from '../components/Spinner';
 import Notice from '../components/Notice/Notice';
 
 const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { user } = useSelector(state => state.auth);
   const { enrollments, isLoading: enrollmentsLoading } = useSelector(state => state.enrollments);
@@ -28,6 +31,13 @@ const StudentDashboard = () => {
         return 'warning';
     }
   };
+  
+  const handleLogout = () => {
+    dispatch(resetChatState());
+    dispatch(logout());
+    navigate('/login');
+    toast.success('Logged out successfully');
+  };
 
   if (enrollmentsLoading || issuesLoading) {
     return <Spinner />;
@@ -39,7 +49,16 @@ const StudentDashboard = () => {
         <div className="col-md-12">
           <div className="card border-0 shadow-sm">
             <div className="card-body">
-              <h1 className="card-title mb-4">Student Dashboard</h1>
+              <div className="d-flex justify-content-between align-items-center mb-4">
+                <h1 className="card-title mb-0">Student Dashboard</h1>
+                <button 
+                  className="btn btn-outline-danger" 
+                  onClick={handleLogout}
+                >
+                  <i className="bi bi-box-arrow-right me-2"></i>
+                  Logout
+                </button>
+              </div>
               <div className="mb-4">
                 <div className="alert alert-info">
                   <h4>Welcome, {user?.name}!</h4>
@@ -84,13 +103,21 @@ const StudentDashboard = () => {
                     Notices
                   </button>
                 </li>
+                <li className="nav-item">
+                  <button 
+                    className={`nav-link ${activeTab === 'chat' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('chat')}
+                  >
+                    Chat
+                  </button>
+                </li>
               </ul>
 
               {/* Overview Tab */}
               {activeTab === 'overview' && (
                 <div>
                   <div className="row">
-                    <div className="col-md-4 mb-4">
+                    <div className="col-md-3 mb-4">
                       <div className="card h-100 border-primary border-top-0 border-end-0 border-bottom-0 border-4">
                         <div className="card-body">
                           <h5 className="card-title">Hostel Enrollment</h5>
@@ -99,7 +126,7 @@ const StudentDashboard = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4 mb-4">
+                    <div className="col-md-3 mb-4">
                       <div className="card h-100 border-danger border-top-0 border-end-0 border-bottom-0 border-4">
                         <div className="card-body">
                           <h5 className="card-title">Report Issue</h5>
@@ -108,12 +135,21 @@ const StudentDashboard = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4 mb-4">
+                    <div className="col-md-3 mb-4">
                       <div className="card h-100 border-success border-top-0 border-end-0 border-bottom-0 border-4">
                         <div className="card-body">
                           <h5 className="card-title">Submit Feedback</h5>
                           <p className="card-text">Provide feedback about your campus experience to help us improve.</p>
                           <Link to="/feedback/new" className="btn btn-success">Submit Feedback</Link>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-3 mb-4">
+                      <div className="card h-100 border-info border-top-0 border-end-0 border-bottom-0 border-4">
+                        <div className="card-body">
+                          <h5 className="card-title">Campus Chat</h5>
+                          <p className="card-text">Connect with other students and staff through our real-time chat system.</p>
+                          <Link to="/chat" className="btn btn-info">Open Chat</Link>
                         </div>
                       </div>
                     </div>
@@ -285,8 +321,32 @@ const StudentDashboard = () => {
               {/* Notices Tab */}
               {activeTab === 'notices' && (
                 <div>
-                  <h3 className="mb-4">Important Notices</h3>
                   <Notice />
+                </div>
+              )}
+
+              {/* Chat Tab */}
+              {activeTab === 'chat' && (
+                <div>
+                  <div className="card shadow-sm">
+                    <div className="card-body">
+                      <h3 className="card-title mb-4">Campus Chat</h3>
+                      <p>Connect with fellow students, faculty, and staff in real-time through our chat system.</p>
+                      
+                      <div className="text-center p-4">
+                        <div className="mb-4">
+                          <i className="bi bi-chat-dots-fill text-primary" style={{ fontSize: '3rem' }}></i>
+                        </div>
+                        <h5 className="mb-3">Start a conversation now!</h5>
+                        <p className="mb-4">
+                          You can create direct messages with other users or participate in group discussions.
+                        </p>
+                        <Link to="/chat" className="btn btn-primary btn-lg">
+                          <i className="bi bi-chat-text me-2"></i> Open Chat
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

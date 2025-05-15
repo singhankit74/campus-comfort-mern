@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { logout } from '../redux/slices/authSlice';
+import { resetChatState } from '../redux/slices/chatSlice';
 import { getAllStudents } from '../redux/slices/userSlice';
 import { getAllEnrollments, updateEnrollmentStatus } from '../redux/slices/enrollmentSlice';
 import { getRooms } from '../redux/slices/roomSlice';
@@ -12,13 +14,14 @@ import AdminNotice from '../components/Notice/AdminNotice';
 import './AdminDashboard.css'; // We'll create this CSS file
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('roomStats'); // Default to room statistics tab
+  const [activeTab, setActiveTab] = useState('roomStats'); // 'roomStats', 'enrollments', 'issues', 'feedback', 'notices', 'chat'
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [enrollmentView, setEnrollmentView] = useState('pending'); // 'pending', 'approved', 'allocated'
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { user } = useSelector(state => state.auth);
   const { students = [], isLoading: studentsLoading, isError: studentsError, message: studentsMessage } = useSelector(state => state.users || { students: [] });
@@ -209,12 +212,31 @@ const AdminDashboard = () => {
     );
   };
 
+  const handleLogout = () => {
+    // Reset chat state before logout
+    dispatch(resetChatState());
+    // Logout the user
+    dispatch(logout());
+    // Navigate to login page
+    navigate('/login');
+    toast.success('Logged out successfully');
+  };
+
   return (
     <div className="container my-5">
       <div className="d-flex justify-content-between align-items-center mb-5">
         <h1 className="fw-bold display-6">Admin Dashboard</h1>
-        <div className="badge bg-primary p-3 fs-6">
-          <i className="bi bi-person-circle me-2"></i> {user?.name || 'Admin'}
+        <div className="d-flex align-items-center">
+          <div className="badge bg-primary p-3 fs-6 me-3">
+            <i className="bi bi-person-circle me-2"></i> {user?.name || 'Admin'}
+          </div>
+          <button 
+            className="btn btn-outline-danger" 
+            onClick={handleLogout}
+          >
+            <i className="bi bi-box-arrow-right me-2"></i>
+            Logout
+          </button>
         </div>
       </div>
 
@@ -263,6 +285,15 @@ const AdminDashboard = () => {
           >
             <i className="bi bi-megaphone me-2"></i>
             Notices
+          </button>
+        </li>
+        <li className="nav-item">
+          <button 
+            className={`nav-link ${activeTab === 'chat' ? 'active' : ''}`}
+            onClick={() => setActiveTab('chat')}
+          >
+            <i className="bi bi-chat-dots me-2"></i>
+            Chat
           </button>
         </li>
       </ul>
@@ -807,9 +838,70 @@ const AdminDashboard = () => {
 
       {/* Notices Tab */}
       {activeTab === 'notices' && (
-        <div className="card border-0 shadow-sm mb-4">
-          <div className="card-body">
-            <AdminNotice />
+        <div className="row mt-4">
+          <div className="col-md-12">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title mb-4">Manage Campus Notices</h3>
+                <AdminNotice />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Chat Tab */}
+      {activeTab === 'chat' && (
+        <div className="row mt-4">
+          <div className="col-md-12">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title mb-4">Campus Communication Center</h3>
+                <p className="lead">Connect with students and staff in real-time through our integrated chat system.</p>
+                
+                <div className="row mt-4">
+                  <div className="col-md-6">
+                    <div className="card border-left-primary h-100">
+                      <div className="card-body">
+                        <div className="text-center mb-4">
+                          <i className="bi bi-chat-left-text text-primary" style={{ fontSize: '3rem' }}></i>
+                        </div>
+                        <h5 className="text-center mb-3">Direct Messages</h5>
+                        <p className="text-center">Communicate one-on-one with students to address their specific concerns.</p>
+                        <div className="text-center mt-3">
+                          <Link to="/chat" className="btn btn-primary">
+                            <i className="bi bi-chat me-2"></i>View Messages
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="col-md-6">
+                    <div className="card border-left-info h-100">
+                      <div className="card-body">
+                        <div className="text-center mb-4">
+                          <i className="bi bi-people text-info" style={{ fontSize: '3rem' }}></i>
+                        </div>
+                        <h5 className="text-center mb-3">Group Chats</h5>
+                        <p className="text-center">Create group discussions for announcements, feedback, or community building.</p>
+                        <div className="text-center mt-3">
+                          <Link to="/chat" className="btn btn-info">
+                            <i className="bi bi-plus-circle me-2"></i>Create Group Chat
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-center mt-4">
+                  <Link to="/chat" className="btn btn-lg btn-primary">
+                    <i className="bi bi-chat-square-dots me-2"></i>Open Communication Center
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

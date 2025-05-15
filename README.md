@@ -36,6 +36,13 @@ A comprehensive hostel management system built using the MERN (MongoDB, Express,
   - Students can view all notices
   - Central communication channel
 
+- **Real-time Chat System**
+  - Direct messaging between students and staff
+  - Group chat functionality for hostel blocks or departments
+  - Real-time message delivery with Socket.io
+  - Typing indicators and read receipts
+  - Chat history persistence
+
 - **Dashboard & Analytics**
   - Summarized statistics and key metrics
   - Visual representation of occupancy and enrollment data
@@ -59,6 +66,7 @@ A comprehensive hostel management system built using the MERN (MongoDB, Express,
 - **Mongoose** - MongoDB object modeling
 - **JWT (JSON Web Tokens)** - Authentication
 - **bcrypt.js** - Password hashing
+- **Socket.io** - Real-time bidirectional communication
 
 ## 📋 Prerequisites
 
@@ -107,6 +115,9 @@ campus-comfort-mern/
 │   ├── public/              # Static files
 │   └── src/                 # Source code
 │       ├── components/      # Reusable components
+│       │   ├── chat/        # Chat components
+│       │   └── ...          # Other components
+│       ├── context/         # React context providers
 │       ├── pages/           # Page components
 │       ├── redux/           # Redux state management
 │       │   ├── slices/      # Redux Toolkit slices
@@ -116,7 +127,10 @@ campus-comfort-mern/
     ├── controllers/         # Route controllers
     ├── middleware/          # Express middleware
     ├── models/              # Mongoose models
+    │   ├── ChatRoom.js      # Chat room model
+    │   └── ...              # Other models
     ├── routes/              # Express routes
+    ├── socketHandlers/      # Socket.io event handlers
     └── server.js            # Main server file
 ```
 
@@ -155,9 +169,9 @@ campus-comfort-mern/
 
 ## 📸 Screenshots
 
-| Dashboard | Room Allocation | Enrollment Management |
-|:---------:|:--------------:|:---------------------:|
-| ![Dashboard](https://via.placeholder.com/400x300?text=Dashboard) | ![Room Allocation](https://via.placeholder.com/400x300?text=Room+Allocation) | ![Enrollment](https://via.placeholder.com/400x300?text=Enrollment) |
+| Dashboard | Room Allocation | Chat System |
+|:---------:|:--------------:|:------------:|
+| ![Dashboard](https://via.placeholder.com/400x300?text=Dashboard) | ![Room Allocation](https://via.placeholder.com/400x300?text=Room+Allocation) | ![Chat System](https://via.placeholder.com/400x300?text=Chat+System) |
 
 | Notices | Issues | Feedback |
 |:-------:|:------:|:--------:|
@@ -181,14 +195,22 @@ campus-comfort-mern/
 | `/api/issues/me` | GET | Get user's issues | Student |
 | `/api/notices` | GET | Get all notices | All Users |
 | `/api/notices` | POST | Create notice | Admin |
+| `/api/chat/rooms` | GET | Get user's chat rooms | Authenticated |
+| `/api/chat/direct/:userId` | GET | Create/get direct chat | Authenticated |
+| `/api/chat/group` | POST | Create group chat | Authenticated |
+| `/api/chat/:chatId/messages` | GET | Get chat messages | Chat Participant |
+| `/api/chat/users` | GET | Get users for chat | Authenticated |
 
 ## 🔍 Future Enhancements
 
+- **Email Verification**: Implementing email verification for registration
+- **Google Sign-in**: Adding OAuth2.0 with Google provider
 - **Real-time Notifications**: Using WebSockets for instant updates
 - **Mobile Application**: Native mobile apps for better accessibility
 - **Advanced Reporting**: Enhanced analytics and reporting capabilities
 - **Payment Integration**: Online payment for hostel fees
 - **Multi-language Support**: Internationalization for diverse user base
+- **File Sharing in Chat**: Allow sharing documents and images in chats
 
 ## 👥 Contributors
 

@@ -5,6 +5,7 @@ import feedbackReducer from './slices/feedbackSlice';
 import enrollmentReducer from './slices/enrollmentSlice';
 import roomReducer from './slices/roomSlice';
 import userReducer from './slices/userSlice';
+import chatReducer from './slices/chatSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     feedback: feedbackReducer,
     enrollments: enrollmentReducer,
     rooms: roomReducer,
-    users: userReducer
+    users: userReducer,
+    chat: chatReducer
   }
 }); 
