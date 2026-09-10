@@ -75,7 +75,7 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/chat', chatRoutes);
 
 // MongoDB Connection
-const MONGO_URI = 'mongodb+srv://chocolatyankit1418:jAGgEaycEN8xz9e3@cluster0.kq4ag4i.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URI = 'mongodb+srv://chocolatyankit1418:jAGgEaycEN8xz9e3@cluster0.kq4ag4i.mongodb.net/campus-comfort?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB Connected'))
@@ -108,11 +108,11 @@ io.engine.on('connection_error', (err) => {
 io.use(async (socket, next) => {
   try {
     const token = socket.handshake.auth.token;
-    
+
     if (!token) {
       return next(new Error('Authentication error: Token missing'));
     }
-    
+
     // Verify token
     let decoded;
     try {
@@ -121,24 +121,24 @@ io.use(async (socket, next) => {
       console.error('JWT verification failed:', jwtError.message);
       return next(new Error(`JWT verification failed: ${jwtError.message}`));
     }
-    
+
     if (!decoded || !decoded.id) {
       return next(new Error('Invalid token structure'));
     }
-    
+
     socket.userId = decoded.id;
-    
+
     // Get user details
     const user = await User.findById(decoded.id).select('name email role');
     if (!user) {
       return next(new Error('Authentication error: User not found'));
     }
-    
+
     socket.user = user;
-    
+
     // Update user's online status
     await User.findByIdAndUpdate(decoded.id, { lastActive: new Date() });
-    
+
     return next();
   } catch (error) {
     console.error('Socket authentication error:', error);
@@ -149,7 +149,7 @@ io.use(async (socket, next) => {
 io.on('connection', (socket) => {
   // Add user to connected users map
   connectedUsers.set(socket.userId, socket.id);
-  
+
   // Join user to their chat rooms
   socket.on('join_chat_rooms', async () => {
     try {
@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
         participants: socket.userId,
         isActive: true
       }).select('_id');
-      
+
       chatRooms.forEach(room => {
         socket.join(room._id.toString());
       });
@@ -165,12 +165,12 @@ io.on('connection', (socket) => {
       console.error('Error joining chat rooms:', error);
     }
   });
-  
+
   // Handle sending messages
   socket.on('send_message', async (messageData) => {
     try {
       const { chatRoomId, content } = messageData;
-      
+
       // Create new message in database
       const newMessage = await Message.create({
         chatRoom: chatRoomId,
@@ -178,28 +178,28 @@ io.on('connection', (socket) => {
         content,
         readBy: [{ user: socket.userId }]
       });
-      
+
       // Update chat room's last message timestamp
       await ChatRoom.findByIdAndUpdate(chatRoomId, {
         lastMessage: new Date()
       });
-      
+
       // Populate sender information
       const populatedMessage = await Message.findById(newMessage._id)
         .populate('sender', 'name email profileImage role regNo');
-      
+
       // Emit message to all participants in the chat room
       io.to(chatRoomId).emit('new_message', populatedMessage);
-      
+
       // Get all participants to notify about the new message
       const chatRoom = await ChatRoom.findById(chatRoomId);
       chatRoom.participants.forEach(participantId => {
         const participantIdStr = participantId.toString();
-        
+
         // Don't notify the sender
         if (participantIdStr !== socket.userId) {
           const socketId = connectedUsers.get(participantIdStr);
-          
+
           // If participant is connected, emit notification
           if (socketId) {
             io.to(socketId).emit('message_notification', {
@@ -209,13 +209,13 @@ io.on('connection', (socket) => {
           }
         }
       });
-      
+
     } catch (error) {
       console.error('Error sending message:', error);
       socket.emit('message_error', { error: 'Failed to send message' });
     }
   });
-  
+
   // Handle read receipts
   socket.on('mark_as_read', async ({ chatRoomId }) => {
     try {
@@ -230,7 +230,7 @@ io.on('connection', (socket) => {
           $push: { readBy: { user: socket.userId, readAt: new Date() } }
         }
       );
-      
+
       // Notify other users that this user has read their messages
       io.to(chatRoomId).emit('messages_read', {
         chatRoomId,
@@ -240,7 +240,7 @@ io.on('connection', (socket) => {
       console.error('Error marking messages as read:', error);
     }
   });
-  
+
   // Handle typing indicators
   socket.on('typing', ({ chatRoomId }) => {
     socket.to(chatRoomId).emit('user_typing', {
@@ -249,14 +249,14 @@ io.on('connection', (socket) => {
       userName: socket.user.name
     });
   });
-  
+
   socket.on('stop_typing', ({ chatRoomId }) => {
     socket.to(chatRoomId).emit('user_stop_typing', {
       chatRoomId,
       userId: socket.userId
     });
   });
-  
+
   // Handle user disconnect
   socket.on('disconnect', () => {
     connectedUsers.delete(socket.userId);
@@ -266,7 +266,7 @@ io.on('connection', (socket) => {
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')));
-  
+
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../client', 'build', 'index.html'));
   });

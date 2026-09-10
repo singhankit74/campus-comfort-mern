@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -11,8 +11,8 @@ import Spinner from '../components/Spinner';
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { myIssues, isLoading: issuesLoading } = useSelector((state) => state.issues);
-  const { myFeedbacks, isLoading: feedbackLoading } = useSelector((state) => state.feedbacks);
-  
+  const { myFeedbacks, isLoading: feedbackLoading } = useSelector((state) => state.feedback);
+
   const [issueStats, setIssueStats] = useState({
     total: 0,
     open: 0,
@@ -127,11 +127,10 @@ const Dashboard = () => {
                       <div className="d-flex w-100 justify-content-between">
                         <h6 className="mb-1">{issue.title}</h6>
                         <small>
-                          <span className={`badge bg-${
-                            issue.status === 'open' ? 'primary' :
+                          <span className={`badge bg-${issue.status === 'open' ? 'primary' :
                             issue.status === 'in-progress' ? 'warning' :
-                            issue.status === 'resolved' ? 'success' : 'secondary'
-                          }`}>
+                              issue.status === 'resolved' ? 'success' : 'secondary'
+                            }`}>
                             {issue.status}
                           </span>
                         </small>
@@ -202,11 +201,10 @@ const Dashboard = () => {
                       <div className="d-flex w-100 justify-content-between">
                         <h6 className="mb-1">{feedback.title}</h6>
                         <small>
-                          <span className={`badge bg-${
-                            feedback.status === 'pending' ? 'info' :
+                          <span className={`badge bg-${feedback.status === 'pending' ? 'info' :
                             feedback.status === 'reviewed' ? 'primary' :
-                            feedback.status === 'implemented' ? 'success' : 'secondary'
-                          }`}>
+                              feedback.status === 'implemented' ? 'success' : 'secondary'
+                            }`}>
                             {feedback.status}
                           </span>
                         </small>
@@ -273,4 +271,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default memo(Dashboard); 

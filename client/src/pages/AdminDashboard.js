@@ -35,7 +35,6 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     loadEnrollments();
-    dispatch(getAllStudents());
     dispatch(getRooms());
     dispatch(getIssues(1, 5)); 
     dispatch(getAllFeedback(1, 5));

@@ -10,10 +10,10 @@ const FeedbackDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
-  const { feedback, isLoading, isError, message } = useSelector((state) => state.feedbacks);
+
+  const { feedback, isLoading, isError, message } = useSelector((state) => state.feedback);
   const { user } = useSelector((state) => state.auth);
-  
+
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ const FeedbackDetail = () => {
           <hr />
           <h5>Details</h5>
           <p className="mb-0">{feedback.description}</p>
-          
+
           {feedback.response && (
             <>
               <hr />
@@ -236,14 +236,14 @@ const FeedbackDetail = () => {
             <h4>Confirm Delete</h4>
             <p>Are you sure you want to delete this feedback? This action cannot be undone.</p>
             <div className="d-flex justify-content-end gap-2">
-              <button 
-                className="btn btn-outline-secondary" 
+              <button
+                className="btn btn-outline-secondary"
                 onClick={() => setShowConfirmDelete(false)}
               >
                 Cancel
               </button>
-              <button 
-                className="btn btn-danger" 
+              <button
+                className="btn btn-danger"
                 onClick={handleDelete}
               >
                 Delete

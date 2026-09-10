@@ -15,12 +15,12 @@ const CreateFeedback = () => {
   });
 
   const { title, description, category, type } = formData;
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.feedbacks
+    (state) => state.feedback
   );
 
   useEffect(() => {
