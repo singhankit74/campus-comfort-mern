@@ -19,6 +19,12 @@ import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 import Spinner from './components/Spinner';
 
+// Import components
+import PrivateRoute from './components/PrivateRoute';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import RoleBasedRedirect from './components/RoleBasedRedirect';
+
 // Lazy load heavy pages
 const AdminRegister = lazy(() => import('./pages/AdminRegister'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -36,12 +42,6 @@ const RoomAllocation = lazy(() => import('./pages/RoomAllocation'));
 const NoticeList = lazy(() => import('./pages/NoticeList'));
 const AdminNoticeList = lazy(() => import('./pages/AdminNoticeList'));
 const ChatPage = lazy(() => import('./pages/ChatPage'));
-
-// Import components
-import PrivateRoute from './components/PrivateRoute';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import RoleBasedRedirect from './components/RoleBasedRedirect';
 
 function App() {
   return (
